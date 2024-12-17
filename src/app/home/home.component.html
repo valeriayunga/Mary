@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mary - Tu Asistente de Salud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #7B1FA2;
+            --secondary-color: #A076EC;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+
+        <!-- Hero Section -->
+        <section class="  text-gray-900 py-14 rounded-xl mb-8 ml-12">
+            <div class="max-w-2xl mx-auto text-left">
+                <h1 class="text-5xl font-bold mb-4">Mary</h1>
+                <p class="text-xl mb-8 mr-40">Tu asistente de salud inteligente, siempre lista para ayudarte.</p>
+                <button [routerLink]="'/chat'"
+                  class="bg-gradient-to-r from-purple-400 to-blue-500 hover:from-pink-500 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110">
+                  <i class="fas fa-comment-dots mr-2"></i> Ingresar al chat
+              </button>
+            </div>
+        </section>
+
+          <!-- Información Médica -->
+          <section class="w-4/5 mb-8 ml-12">
+              <h2 class="text-3xl font-semibold text-gray-800 mb-4">
+                  <i class="fas fa-notes-medical mr-2 text-blue-500"></i> Tu Información Médica
+              </h2>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium">
+                           <i class="fas fa-calendar-check mr-1 text-green-500"></i> Próxima Cita
+                        </h3>
+                        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">Mañana</span>
+                    </div>
+                    <div class="mb-3">
+                        <h4 class="font-medium text-gray-700">
+                           <i class="fas fa-heartbeat mr-1 text-red-500"></i> Historial Médico
+                        </h4>
+                        <p class="text-gray-600 text-sm">Diabetes, Hipertensión</p>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-700">
+                           <i class="fas fa-pills mr-1 text-blue-500"></i> Medicamentos Actuales
+                      </h4>
+                      <p class="text-gray-600 text-sm">Metformina, Enalapril</p>
+                    </div>
+                </div>
+          </section>
+
+        <!-- Diabetes Consejos -->
+        <section class="mb-8 ml-12 w-4/5">
+            <h2 class="text-3xl  font-semibold text-gray-800 mb-4">
+               <i class="fas fa-lightbulb mr-2 text-yellow-500"></i> Consejos sobre Diabetes
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-lg font-medium mb-3">
+                        <i class="fas fa-utensils mr-1 text-green-500"></i> Estilo de Vida Saludable
+                    </h3>
+                    <p class="text-gray-600 text-sm">Dieta equilibrada y actividad física regular.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-lg font-medium mb-3">
+                       <i class="fas fa-thermometer-half mr-1 text-red-500"></i> Monitoreo de Azúcar
+                    </h3>
+                    <p class="text-gray-600 text-sm">Revisa tus niveles de azúcar en sangre regularmente.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="text-lg font-medium mb-3">
+                      <i class="fas fa-capsules mr-1 text-blue-500"></i> Administración de Medicamentos
+                    </h3>
+                    <p class="text-gray-600 text-sm">Toma tus medicamentos según las indicaciones.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Pie de Página -->
+    <footer class="bg-primary-color text-white py-4 text-center mt-10">
+        <p>© 2024 Mary - Todos los derechos reservados</p>
+    </footer>
+</body>
+
+</html>

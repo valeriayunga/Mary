@@ -1,0 +1,139 @@
+<div class="flex flex-col h-screen bg-gray-100">
+  <!-- Encabezado del chat -->
+  <div class="flex items-center p-3 border-b border-gray-200">
+    <button class="mr-3 focus:outline-none" [routerLink]="'/home'">
+      <i class="fa-solid fa-chevron-left text-2xl text-gray-700"></i>
+    </button>
+    <h2 class="text-2xl font-semibold">Mary</h2>
+  </div>
+  <!-- Contenedor de mensajes -->
+  <div class="flex-grow p-4 overflow-y-auto flex flex-col">
+    <div class="mb-3 self-start bg-white rounded-xl p-3 max-w-3/4">
+      <p class="text-base">"¡Hola! Soy Mary, tu asistente virtual médica."</p>
+    </div>
+    <div class="mb-3 self-start bg-white rounded-xl p-3 max-w-3/4">
+      <p class="text-base">Estoy aquí para ayudarte con citas, recetas, historial médico y más.😊</p>
+      <p class="text-base">¿En qué puedo asistirte hoy?</p>
+      <p class="text-base">(Por favor, selecciona una opción o escríbeme).</p>
+    </div>
+  </div>
+  <!-- Opciones (botones) -->
+  <div class="p-4">
+    <h3 class="text-lg font-semibold mb-2">Opciones</h3>
+    <div class="flex flex-col gap-2 w-7/12">
+      <button
+        class="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-200 border border-gray-300"
+        (click)="selectOption('agenda')"
+      >
+        <span class="flex-shrink-0 mr-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#32CD32"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-calendar"
+            width="20"
+            height="20"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+        <span>Agendar una cita médica</span>
+      </button>
+      <button
+        class="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-200 border border-gray-300"
+        (click)="selectOption('historial')"
+      >
+        <span class="flex-shrink-0 mr-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#FFA500"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-file-text"
+            width="20"
+            height="20"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <line x1="10" y1="9" x2="8" y2="9"></line>
+          </svg>
+        </span>
+        <span>Consultar mi historial médico</span>
+      </button>
+      <button
+        class="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-200 border border-gray-300"
+        (click)="selectOption('recetas')"
+      >
+        <span class="flex-shrink-0 mr-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9333ea"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-book-open"
+            width="20"
+            height="20"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </span>
+        <span>Recetas Médicas</span>
+      </button>
+      <button
+        class="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-200 border border-gray-300"
+        (click)="selectOption('laboratorios')"
+      >
+        <span class="flex-shrink-0 mr-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#045acf"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-test-tube"
+            width="20"
+            height="20"
+          >
+            <path d="M2 21h20"></path>
+            <path d="M10 2v7a4 4 0 0 0 8 0V2"></path>
+            <path d="M14 2v20"></path>
+            <circle cx="14" cy="16" r="1"></circle>
+          </svg>
+        </span>
+        <span>Laboratorios</span>
+      </button>
+    </div>
+  </div>
+  <!-- Barra de escritura de mensajes -->
+  <div class="p-4 bg-white flex items-center">
+    <div class="flex items-center border border-gray-300 rounded-full flex-grow mr-2 overflow-hidden">
+      <input type="text" placeholder="Habla conmigo" class="border-none focus:outline-none p-2 pl-4 text-sm flex-grow"
+        [(ngModel)]="messageInput" (keydown.enter)="sendMessage()" />
+    </div>
+    <button
+      class="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition-colors duration-200"
+      (click)="sendMessage()" [disabled]="!messageInput">
+      <div class="flex items-center justify-center space-x-2">
+        <i class="fas fa-paper-plane"></i>
+
+      </div>
+    </button>
+  </div>
