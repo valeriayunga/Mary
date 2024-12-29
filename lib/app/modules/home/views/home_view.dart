@@ -104,7 +104,7 @@ class HomeView extends GetView<HomeController> {
         children: [
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
