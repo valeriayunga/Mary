@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatView extends GetView<ChatController> {
@@ -17,19 +18,21 @@ class ChatView extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        title: const Text('Laboratorios'),
+        title: const Text('Chat Médico'),
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 0.5,
         titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
+          color: Colors.black87,
+          fontSize: 18,
           fontWeight: FontWeight.w500,
         ),
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SafeArea(
         child: Column(
@@ -37,35 +40,14 @@ class ChatView extends GetView<ChatController> {
             // Message bubbles
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 children: [
-                  // Assistant message
-                  Row(
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Mary 02:10 PM',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
                   Container(
                     margin: const EdgeInsets.only(right: 64),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -76,9 +58,9 @@ class ChatView extends GetView<ChatController> {
                   const SizedBox(height: 16),
                   Container(
                     margin: const EdgeInsets.only(right: 64),
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -91,66 +73,78 @@ class ChatView extends GetView<ChatController> {
             ),
             // Options section with fixed position
             Container(
-              color: Colors.white,
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Colors.grey[100]!),
+                ),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Opciones',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8, bottom: 12),
+                    child: Text(
+                      'Opciones',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  _buildOptionButton('Agendar una cita médica'),
+                  _buildOptionButton(
+                    'Agendar una cita médica',
+                    FontAwesomeIcons.calendarPlus,
+                  ),
                   const SizedBox(height: 8),
-                  _buildOptionButton('Consultar mi historial médico'),
+                  _buildOptionButton(
+                    'Consultar mi historial médico',
+                    FontAwesomeIcons.notesMedical,
+                  ),
                   const SizedBox(height: 8),
-                  _buildOptionButton('Recetas Medicas'),
+                  _buildOptionButton(
+                    'Recetas Medicas',
+                    FontAwesomeIcons.prescription,
+                  ),
                   const SizedBox(height: 8),
-                  _buildOptionButton('Laboratorios'),
+                  _buildOptionButton(
+                    'Laboratorios',
+                    FontAwesomeIcons.flask,
+                  ),
                 ],
               ),
             ),
-            // Chat input with improved design
+            // Chat input
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                  top: BorderSide(color: Colors.grey[300]!),
+                  top: BorderSide(color: Colors.grey[200]!),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, -1),
-                  ),
-                ],
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
                       ),
                       child: TextField(
                         controller: _textController,
                         focusNode: _focusNode,
-                        decoration: InputDecoration(
-                          hintText: 'Escribe un mensaje...',
-                          hintStyle: TextStyle(color: Colors.grey[600]),
+                        decoration: const InputDecoration(
+                          hintText: 'Mensaje...',
+                          hintStyle: TextStyle(color: Colors.black45),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
+                          contentPadding: EdgeInsets.symmetric(
                             horizontal: 16.0,
-                            vertical: 10.0,
+                            vertical: 12.0,
                           ),
                         ),
                         onSubmitted: _handleSubmitted,
@@ -161,16 +155,10 @@ class ChatView extends GetView<ChatController> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: () => _handleSubmitted(_textController.text),
-                      color: Colors.white,
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: () => _handleSubmitted(_textController.text),
+                    color: const Color(0xFFa076ec),
                   ),
                 ],
               ),
@@ -178,8 +166,33 @@ class ChatView extends GetView<ChatController> {
           ],
         ),
       ),
-      resizeToAvoidBottomInset:
-          false, // Evita que el teclado mueva el contenido
+      resizeToAvoidBottomInset: true,
+    );
+  }
+
+  Widget _buildOptionButton(String text, IconData icon) {
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton.icon(
+        icon: Icon(icon, size: 16, color: const Color(0xFFa076ec)),
+        label: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        onPressed: () {},
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          alignment: Alignment.centerLeft,
+          backgroundColor: Colors.grey[50],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
     );
   }
 
@@ -187,24 +200,5 @@ class ChatView extends GetView<ChatController> {
   void dispose() {
     _textController.dispose();
     _focusNode.dispose();
-  }
-
-  Widget _buildOptionButton(String text) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple[300],
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          elevation: 0,
-        ),
-        child: Text(text),
-      ),
-    );
   }
 }
