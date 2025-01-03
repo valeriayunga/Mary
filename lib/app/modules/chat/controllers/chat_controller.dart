@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 class ChatMessage {
   final String text;
@@ -26,8 +27,9 @@ class ChatMessage {
 
 class ChatController extends GetxController {
   final messages = <ChatMessage>[].obs;
+  final isLoading = false.obs; // Estado de carga
   final channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8000/ws/chat'));
-
+  final isListening = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -35,7 +37,7 @@ class ChatController extends GetxController {
           (message) {
         try {
           final parsedMessage = json.decode(message);
-
+          isLoading.value = false;
           List<Map<String, dynamic>> doctorsList = [];
           if (parsedMessage['medical_options'] != null &&
               parsedMessage['medical_options'].isNotEmpty &&
@@ -56,20 +58,33 @@ class ChatController extends GetxController {
           messages.add(chatMessage);
         } catch (e) {
           print("Error al parsear mensaje: $e");
+          isLoading.value = false; // Desactiva el estado de carga en caso de error
         }
+          },
+      onError: (error) {
+        print("Error en el websocket: $error");
+        isLoading.value = false; // Desactiva el estado de carga en caso de error
       },
-      onError: (error) => print("Error en el websocket: $error"),
-      onDone: () => print("Conexión Cerrada"),
+      onDone: () {
+        print("Conexión Cerrada");
+        isLoading.value = false; // Desactiva el estado de carga cuando se cierra la conexión
+      },
     );
   }
 
   void sendMessage(String text) {
     messages.add(ChatMessage(
-        text: text,
-        isUser: true,
-        timestamp: DateTime.now()
+      text: text,
+      isUser: true,
+      timestamp: DateTime.now(),
     ));
+    isLoading.value = true; // Activa el estado de carga
     channel.sink.add(text);
+  }
+
+  void sendDateTime(DateTime dateTime) {
+    final formattedDateTime = DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
+    sendMessage(formattedDateTime);
   }
 
   @override
@@ -77,4 +92,11 @@ class ChatController extends GetxController {
     channel.sink.close();
     super.onClose();
   }
+  void sendTranscribedText(String text) {
+    if (text.isNotEmpty) {
+      sendMessage(text);
+    }
+  }
 }
+
+

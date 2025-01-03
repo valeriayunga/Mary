@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:mary/main.dart'; // Asegúrate de usar el nombre de tu proyecto
 
 void main() {
   testWidgets('App Loads Successfully', (WidgetTester tester) async {
