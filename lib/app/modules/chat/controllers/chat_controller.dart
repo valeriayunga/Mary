@@ -1,10 +1,8 @@
-// En `chat_controller.dart`
-
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
 class ChatMessage {
   final String text;
   final bool isUser;
@@ -27,9 +25,10 @@ class ChatMessage {
 
 class ChatController extends GetxController {
   final messages = <ChatMessage>[].obs;
-  final isLoading = false.obs; // Estado de carga
+  final isLoading = false.obs;
   final channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8000/ws/chat'));
   final isListening = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -50,24 +49,25 @@ class ChatController extends GetxController {
             isUser: false,
             timestamp: DateTime.now(),
             options: parsedMessage['options']?.cast<Map<String, dynamic>>() ?? [],
-            medicalOptions: !doctorsList.isNotEmpty ?
-            (parsedMessage['medical_options']?.cast<Map<String, dynamic>>() ?? []) : [],
+            medicalOptions: !doctorsList.isNotEmpty
+                ? (parsedMessage['medical_options']?.cast<Map<String, dynamic>>() ?? [])
+                : [],
             specialtyOptions: parsedMessage['specialty_options']?.cast<Map<String, dynamic>>() ?? [],
             doctorOptions: doctorsList,
           );
           messages.add(chatMessage);
         } catch (e) {
           print("Error al parsear mensaje: $e");
-          isLoading.value = false; // Desactiva el estado de carga en caso de error
+          isLoading.value = false;
         }
-          },
+      },
       onError: (error) {
         print("Error en el websocket: $error");
-        isLoading.value = false; // Desactiva el estado de carga en caso de error
+        isLoading.value = false;
       },
       onDone: () {
         print("Conexión Cerrada");
-        isLoading.value = false; // Desactiva el estado de carga cuando se cierra la conexión
+        isLoading.value = false;
       },
     );
   }
@@ -78,7 +78,7 @@ class ChatController extends GetxController {
       isUser: true,
       timestamp: DateTime.now(),
     ));
-    isLoading.value = true; // Activa el estado de carga
+    isLoading.value = true;
     channel.sink.add(text);
   }
 
@@ -92,11 +92,10 @@ class ChatController extends GetxController {
     channel.sink.close();
     super.onClose();
   }
+
   void sendTranscribedText(String text) {
     if (text.isNotEmpty) {
       sendMessage(text);
     }
   }
 }
-
-

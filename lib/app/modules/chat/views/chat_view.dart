@@ -10,9 +10,10 @@ class ChatView extends GetView<ChatController> {
   final FocusNode _focusNode = FocusNode();
   final stt.SpeechToText _speech = stt.SpeechToText();
 
-  // Nuevas variables para la animación
+  // Variables para la animación del micrófono
   final RxDouble _micScale = 1.0.obs;
   Timer? _animationTimer;
+  String _tempWords = ''; // Variable temporal para acumular palabras
 
   ChatView({super.key});
 
@@ -24,25 +25,35 @@ class ChatView extends GetView<ChatController> {
 
   void _startListening() async {
     if (!controller.isListening.value) {
-      bool available = await _speech.initialize();
+      bool available = await _speech.initialize(
+        onStatus: (status) => print('Estado: $status'),
+        onError: (error) => print('Error: $error'),
+      );
       if (available) {
         controller.isListening.value = true;
-        _startMicAnimation(); // Iniciar la animación
+        _startMicAnimation();
+        _tempWords = ''; // Limpiar las palabras temporales al iniciar la grabación
         _speech.listen(
           onResult: (result) {
-            _textController.text = result.recognizedWords;
-            if (result.finalResult) {
-              controller.sendTranscribedText(result.recognizedWords);
-              _stopMicAnimation();
-              controller.isListening.value = false;
-            }
+            _tempWords = result.recognizedWords;
+            _textController.text = _tempWords;
+            print('Resultado: ${result.recognizedWords}, Final: ${result.finalResult}');
           },
         );
+      } else {
+        print("El reconocimiento de voz no está disponible.");
       }
     } else {
       controller.isListening.value = false;
-      _speech.stop();
-      _stopMicAnimation();
+      _stopListening();
+    }
+  }
+
+  void _stopListening() async {
+    _stopMicAnimation();
+    await _speech.stop();
+    if (_tempWords.isNotEmpty) {
+      controller.sendTranscribedText(_tempWords);
     }
   }
 
@@ -182,7 +193,7 @@ class ChatView extends GetView<ChatController> {
                 () => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              transform: Matrix4.identity()..scale(_micScale.value), // Efecto de escala
+              transform: Matrix4.identity()..scale(_micScale.value),
               child: const Icon(
                 Icons.mic,
                 color: Colors.red,
@@ -465,7 +476,6 @@ class ChatView extends GetView<ChatController> {
     );
   }
 
-
   Widget _buildDoctorCard(BuildContext context, Map<String, dynamic> doctor) {
     final String fullName = "${doctor['first_name'] ?? ''} ${doctor['last_name'] ?? ''}".trim();
 
@@ -487,11 +497,7 @@ class ChatView extends GetView<ChatController> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () async {
-            // Enviar el nombre del doctor al backend
             controller.sendMessage(fullName);
-
-            // Esperar a que el backend responda
-            //await Future.delayed(const Duration(milliseconds: 500)); // Simula la espera
             if (controller.isLoading.value) {
               await _selectDateTime(context);
             }
@@ -579,6 +585,7 @@ class ChatView extends GetView<ChatController> {
       ),
     );
   }
+
   Future<void> _selectDateTime(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -589,10 +596,10 @@ class ChatView extends GetView<ChatController> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.blue, // Color principal del selector
-              onPrimary: Colors.white, // Color del texto en el selector
+              primary: Colors.blue,
+              onPrimary: Colors.white,
             ),
-            dialogBackgroundColor: Colors.white, // Fondo del diálogo
+            dialogBackgroundColor: Colors.white,
           ),
           child: child!,
         );
@@ -607,10 +614,10 @@ class ChatView extends GetView<ChatController> {
           return Theme(
             data: ThemeData.light().copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Colors.blue, // Color principal del selector
-                onPrimary: Colors.white, // Color del texto en el selector
+                primary: Colors.blue,
+                onPrimary: Colors.white,
               ),
-              dialogBackgroundColor: Colors.white, // Fondo del diálogo
+              dialogBackgroundColor: Colors.white,
             ),
             child: child!,
           );
@@ -625,8 +632,6 @@ class ChatView extends GetView<ChatController> {
           pickedTime.hour,
           pickedTime.minute,
         );
-
-        // Enviar la fecha y hora seleccionada al controlador
         controller.sendDateTime(selectedDateTime);
       }
     }
