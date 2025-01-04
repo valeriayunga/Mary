@@ -32,12 +32,14 @@ class ChatView extends GetView<ChatController> {
       if (available) {
         controller.isListening.value = true;
         _startMicAnimation();
-        _tempWords = ''; // Limpiar las palabras temporales al iniciar la grabación
+        _tempWords =
+            ''; // Limpiar las palabras temporales al iniciar la grabación
         _speech.listen(
           onResult: (result) {
             _tempWords = result.recognizedWords;
             _textController.text = _tempWords;
-            print('Resultado: ${result.recognizedWords}, Final: ${result.finalResult}');
+            print(
+                'Resultado: ${result.recognizedWords}, Final: ${result.finalResult}');
           },
         );
       } else {
@@ -59,7 +61,8 @@ class ChatView extends GetView<ChatController> {
 
   void _startMicAnimation() {
     _micScale.value = 1.0;
-    _animationTimer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
+    _animationTimer =
+        Timer.periodic(const Duration(milliseconds: 300), (timer) {
       if (controller.isListening.value) {
         _micScale.value = (_micScale.value == 1.0) ? 1.2 : 1.0;
       } else {
@@ -93,22 +96,23 @@ class ChatView extends GetView<ChatController> {
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Obx(() => ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: controller.messages.length,
-                itemBuilder: (context, index) {
-                  final message = controller.messages[index];
-                  return _buildMessage(message);
-                },
-              )),
+            Flexible(
+              child: Obx(
+                () => ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = controller.messages[index];
+                    return _buildMessage(message);
+                  },
+                ),
+              ),
             ),
             Obx(() => _buildOptionsSection(context)),
             _buildInputSection(),
           ],
         ),
       ),
-      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -135,10 +139,14 @@ class ChatView extends GetView<ChatController> {
           Row(
             children: [
               Obx(() => IconButton(
-                icon: Icon(controller.isListening.value ? Icons.mic_off : Icons.mic),
-                onPressed: _startListening,
-                color: controller.isListening.value ? Colors.red : Colors.blue,
-              )),
+                    icon: Icon(controller.isListening.value
+                        ? Icons.mic_off
+                        : Icons.mic),
+                    onPressed: _startListening,
+                    color: controller.isListening.value
+                        ? Colors.red
+                        : const Color(0xFFa076ec),
+                  )),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -167,7 +175,7 @@ class ChatView extends GetView<ChatController> {
               const SizedBox(width: 8),
               Container(
                 decoration: const BoxDecoration(
-                  color: Colors.blue,
+                  color: Color(0xFFa076ec),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -190,7 +198,7 @@ class ChatView extends GetView<ChatController> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Obx(
-                () => AnimatedContainer(
+            () => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               transform: Matrix4.identity()..scale(_micScale.value),
@@ -217,7 +225,7 @@ class ChatView extends GetView<ChatController> {
   Widget _buildMessage(ChatMessage message) {
     return Column(
       crossAxisAlignment:
-      message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         if (!message.isUser) _buildAssistantHeader(message),
         Container(
@@ -270,7 +278,7 @@ class ChatView extends GetView<ChatController> {
 
   Widget _buildOptionsSection(BuildContext context) {
     final lastMessage =
-    controller.messages.isNotEmpty ? controller.messages.last : null;
+        controller.messages.isNotEmpty ? controller.messages.last : null;
     if (lastMessage == null) return Container();
 
     if (lastMessage.doctorOptions.isNotEmpty) {
@@ -373,14 +381,16 @@ class ChatView extends GetView<ChatController> {
             padding: const EdgeInsets.all(16),
             itemCount: options.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) => optionBuilder(context, options[index]),
+            itemBuilder: (context, index) =>
+                optionBuilder(context, options[index]),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildGenericOptionCard(BuildContext context, Map<String, dynamic> option) {
+  Widget _buildGenericOptionCard(
+      BuildContext context, Map<String, dynamic> option) {
     return _buildOptionButton(
       option['text'],
       icon: _getGenericOptionIcon(option['text']),
@@ -402,7 +412,8 @@ class ChatView extends GetView<ChatController> {
     }
   }
 
-  Widget _buildMedicalOptionCard(BuildContext context, Map<String, dynamic> medicalOption) {
+  Widget _buildMedicalOptionCard(
+      BuildContext context, Map<String, dynamic> medicalOption) {
     return _buildOptionButton(
       '${medicalOption['name']} - ${medicalOption['address']}',
       icon: Icons.local_hospital,
@@ -410,7 +421,8 @@ class ChatView extends GetView<ChatController> {
     );
   }
 
-  Widget _buildSpecialtyOptionCard(BuildContext context, Map<String, dynamic> specialtyOption) {
+  Widget _buildSpecialtyOptionCard(
+      BuildContext context, Map<String, dynamic> specialtyOption) {
     return _buildOptionButton(
       specialtyOption['specialty'],
       icon: Icons.medical_services,
@@ -477,7 +489,8 @@ class ChatView extends GetView<ChatController> {
   }
 
   Widget _buildDoctorCard(BuildContext context, Map<String, dynamic> doctor) {
-    final String fullName = "${doctor['first_name'] ?? ''} ${doctor['last_name'] ?? ''}".trim();
+    final String fullName =
+        "${doctor['first_name'] ?? ''} ${doctor['last_name'] ?? ''}".trim();
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -523,20 +536,21 @@ class ChatView extends GetView<ChatController> {
                     ),
                     Obx(() => controller.isLoading.value
                         ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    )
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.blue),
+                          )
                         : Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.blue,
-                        size: 18,
-                      ),
-                    )),
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.blue,
+                              size: 18,
+                            ),
+                          )),
                   ],
                 ),
                 const SizedBox(height: 8),
