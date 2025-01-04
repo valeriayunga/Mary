@@ -4,6 +4,7 @@ import '../controllers/home_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mary/app/routes/app_pages.dart';
 import 'package:mary/app/widgets/citas.dart';
+import 'package:mary/app/widgets/laboratorios.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -160,13 +161,15 @@ class HomeView extends GetView<HomeController> {
           icon: FontAwesomeIcons.calendar,
           label: 'Citas',
           onTap: () {
-            Get.to(() => AppointmentsView());
+            Get.to(() => const AppointmentsView());
           },
         ),
         _buildQuickActionItem(
           icon: FontAwesomeIcons.fileAlt,
-          label: 'Reportes',
-          onTap: () {},
+          label: 'Laboratorios',
+          onTap: () {
+            Get.to(() => const LabResultsView());
+          },
         ),
       ],
     );
