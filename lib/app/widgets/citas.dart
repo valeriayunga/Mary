@@ -1,9 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class AppointmentsView extends GetView {
+class AppointmentsView extends StatefulWidget {
   const AppointmentsView({Key? key}) : super(key: key);
+
+  @override
+  _AppointmentsViewState createState() => _AppointmentsViewState();
+}
+
+class _AppointmentsViewState extends State<AppointmentsView> {
+  List<dynamic> _upcomingAppointments = [];
+  List<dynamic> _pastAppointments = [];
+  bool _isLoading = true;
+  final List<String> _locations = ['Clínica San Pablo', 'Hospital Central', 'MediHelp'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAppointments();
+  }
+
+  Future<void> _fetchAppointments() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/citas/dia/'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _processAppointments(data['appoiments']);
+      } else {
+        // Manejar el error de la API
+        print("Error al obtener citas: ${response.statusCode}");
+        Get.snackbar("Error", "No se pudieron cargar las citas",
+            backgroundColor: Colors.red[300], colorText: Colors.white);
+      }
+    } catch (e) {
+      // Manejar errores de conexión
+      print("Error de conexión: $e");
+      Get.snackbar("Error", "Error de conexión con el servidor",
+          backgroundColor: Colors.red[300], colorText: Colors.white);
+
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  void _processAppointments(List<dynamic> appointments) {
+    DateTime now = DateTime.now();
+    _upcomingAppointments = [];
+    _pastAppointments = [];
+
+
+    for (var appointment in appointments) {
+      DateTime appointmentDate = DateTime.parse(appointment['date']);
+      // Usamos DateTime.parse para convertir la fecha y hora en objetos DateTime
+
+
+      if (appointmentDate.isAfter(now.subtract(const Duration(days: 1)))) {
+        _upcomingAppointments.add(appointment);
+      } else {
+        _pastAppointments.add(appointment);
+      }
+    }
+    setState(() {}); // Actualizar la UI después de separar citas
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +93,9 @@ class AppointmentsView extends GetView {
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,6 +115,7 @@ class AppointmentsView extends GetView {
     );
   }
 
+
   Widget _buildUpcomingAppointments() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,25 +126,31 @@ class AppointmentsView extends GetView {
           color: const Color(0xFFa076ec),
         ),
         const SizedBox(height: 16),
-        _buildAppointmentCard(
-          doctorName: 'Dr. Juan Pérez',
-          specialty: 'Endocrinólogo',
-          date: '12 de Octubre, 2024',
-          time: '10:00 AM',
-          location: 'Clínica San Pablo',
-          status: 'Confirmada',
-          statusColor: Colors.green,
-        ),
-        const SizedBox(height: 12),
-        _buildAppointmentCard(
-          doctorName: 'Dra. Ana García',
-          specialty: 'Cardióloga',
-          date: '15 de Octubre, 2024',
-          time: '3:30 PM',
-          location: 'Hospital Central',
-          status: 'Pendiente',
-          statusColor: Colors.orange,
-        ),
+        if (_upcomingAppointments.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top:20),
+            child: Center(child: Text('No hay citas próximas.' ,style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+            )),
+          )
+        else
+          ..._upcomingAppointments.map((appointment) => Column(
+            children:[
+              _buildAppointmentCard(
+                doctorName: '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
+                specialty: appointment['doctor']['specialty'],
+                date: appointment['date'],
+                time: appointment['time'],
+                location: _locations[appointment['id']%_locations.length],
+                status: appointment['status'],
+                statusColor: appointment['status'] == 'PENDING' ? Colors.orange : Colors.green,
+              ),
+              const SizedBox(height: 12),
+            ],
+          )
+          ),
       ],
     );
   }
@@ -88,19 +165,35 @@ class AppointmentsView extends GetView {
           color: Colors.grey,
         ),
         const SizedBox(height: 16),
-        _buildAppointmentCard(
-          doctorName: 'Dr. Carlos López',
-          specialty: 'Endocrinólogo',
-          date: '5 de Octubre, 2024',
-          time: '11:30 AM',
-          location: 'Clínica San Pablo',
-          status: 'Completada',
-          statusColor: Colors.blue,
-          isPast: true,
-        ),
+        if (_pastAppointments.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top:20),
+            child: Center(child:  Text('No hay citas en el historial.', style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey
+            ),),
+            ),
+          )
+        else
+          ..._pastAppointments.map((appointment) =>Column(
+              children:[
+                _buildAppointmentCard(
+                  doctorName: '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
+                  specialty: appointment['doctor']['specialty'],
+                  date: appointment['date'],
+                  time: appointment['time'],
+                  location: _locations[appointment['id']%_locations.length],
+                  status: appointment['status'],
+                  statusColor: Colors.blue,
+                  isPast: true,
+                ),
+                const SizedBox(height: 12),
+              ]
+          )),
       ],
     );
   }
+
 
   Widget _buildAppointmentCard({
     required String doctorName,
@@ -112,6 +205,8 @@ class AppointmentsView extends GetView {
     required Color statusColor,
     bool isPast = false,
   }) {
+    String formattedTime = time.substring(0,5);
+    String formattedDate = date.split('-').reversed.join('-');
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -188,12 +283,12 @@ class AppointmentsView extends GetView {
             children: [
               _buildInfoItem(
                 icon: FontAwesomeIcons.calendar,
-                text: date,
+                text: formattedDate,
               ),
               const SizedBox(width: 24),
               _buildInfoItem(
                 icon: FontAwesomeIcons.clock,
-                text: time,
+                text: formattedTime,
               ),
             ],
           ),
@@ -263,6 +358,7 @@ class AppointmentsView extends GetView {
       ],
     );
   }
+
 
   Widget _buildSectionHeader({
     required IconData icon,

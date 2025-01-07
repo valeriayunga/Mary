@@ -1,10 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mary/app/widgets/documento.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:open_file/open_file.dart';
 
-class LabResultsView extends GetView {
+class LabResultsView extends StatefulWidget {
   const LabResultsView({Key? key}) : super(key: key);
+
+  @override
+  _LabResultsViewState createState() => _LabResultsViewState();
+}
+
+class _LabResultsViewState extends State<LabResultsView> {
+  List<dynamic> _labResults = [];
+  bool _isLoading = true;
+  final List<String> _laboratories = ['Laboratorio Central', 'Clínica San Pablo', 'MediHelp Lab'];
+  final Dio _dio = Dio();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLabResults();
+  }
+
+  Future<void> _fetchLabResults() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      // Usar la dirección IP local del emulador Android para acceder al backend en el host.
+      final response = await http.get(Uri.parse('http://10.0.2.2:8000/lab/get/tests'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['appoiments'] != null) {
+          _labResults = data['appoiments'];
+        } else {
+          _labResults = [];
+        }
+      } else {
+        // Manejar el error de la API
+        print("Error al obtener resultados de laboratorio: ${response.statusCode}");
+        Get.snackbar("Error", "No se pudieron cargar los resultados de laboratorio",
+            backgroundColor: Colors.red[300], colorText: Colors.white);
+      }
+    } catch (e) {
+      // Manejar errores de conexión
+      print("Error de conexión: $e");
+      Get.snackbar("Error", "Error de conexión con el servidor",
+          backgroundColor: Colors.red[300], colorText: Colors.white);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _downloadAndOpenFile(String fileUrl) async {
+    PermissionStatus status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    try {
+      final response = await _dio.get(
+          'http://10.0.2.2:8000/lab/files/$fileUrl',
+          options: Options(responseType: ResponseType.bytes));
+
+      if (response.statusCode == 200 && response.data != null) {
+        final bytes = response.data;
+        final fileName = fileUrl.split('/').last;
+        OpenFile.open(
+          bytes.toString(),
+          type: 'application/pdf', // o el tipo que sea
+        );
+        Get.snackbar('Apertura Exitosa', 'El archivo se abrio correctamente.',backgroundColor: Colors.green[300], colorText: Colors.white );
+      } else {
+        Get.snackbar("Error", "Error al descargar el archivo",backgroundColor: Colors.red[300], colorText: Colors.white);
+      }
+    } on DioException catch (e) {
+      print("Error de descarga: $e");
+      Get.snackbar("Error", "Error al descargar el archivo",backgroundColor: Colors.red[300], colorText: Colors.white);
+    }catch(e){
+      print("Error desconocido: $e");
+      Get.snackbar("Error", "Error desconocido",backgroundColor: Colors.red[300], colorText: Colors.white);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +109,9 @@ class LabResultsView extends GetView {
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +122,17 @@ class LabResultsView extends GetView {
               color: const Color(0xFFa076ec),
             ),
             const SizedBox(height: 16),
-            _buildLabResultsList(),
+            if (_labResults.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Center(
+                    child: Text(
+                      'No hay resultados de laboratorio.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    )),
+              )
+            else
+              _buildLabResultsList(),
           ],
         ),
       ),
@@ -55,28 +150,18 @@ class LabResultsView extends GetView {
 
   Widget _buildLabResultsList() {
     return Column(
-      children: [
-        _buildLabResultCard(
-          title: 'Análisis de Sangre',
-          date: '15 de Septiembre, 2024',
-          laboratory: 'Laboratorio Central',
-          pdfPath: 'assets/pdfs/blood_test.pdf',
-        ),
-        const SizedBox(height: 12),
-        _buildLabResultCard(
-          title: 'Prueba de Glucosa',
-          date: '10 de Septiembre, 2024',
-          laboratory: 'Clínica San Pablo',
-          pdfPath: 'assets/pdfs/glucose_test.pdf',
-        ),
-        const SizedBox(height: 12),
-        _buildLabResultCard(
-          title: 'Perfil Lipídico',
-          date: '5 de Septiembre, 2024',
-          laboratory: 'Laboratorio Central',
-          pdfPath: 'assets/pdfs/lipid_profile.pdf',
-        ),
-      ],
+      children: _labResults.map((result) => Column(
+        children: [
+          _buildLabResultCard(
+            title: result['test_type'],
+            date: result['date'],
+            laboratory: _laboratories[result['id'] % _laboratories.length],
+            pdfPath: result['file_path'],
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+      ).toList(),
     );
   }
 
@@ -86,6 +171,7 @@ class LabResultsView extends GetView {
     required String laboratory,
     required String pdfPath,
   }) {
+    String formattedDate = date.split('-').reversed.join('-');
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -131,7 +217,7 @@ class LabResultsView extends GetView {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            date,
+                            formattedDate,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -156,7 +242,7 @@ class LabResultsView extends GetView {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Get.to(() => const MyPdfViewer());
+                          // Get.to(() =>  MyPdfViewer(pdfPath: pdfPath)); //ya no lo mandaremos a ver
                         },
                         icon: const Icon(FontAwesomeIcons.filePdf),
                         label: const Text('Ver PDF'),
@@ -172,8 +258,8 @@ class LabResultsView extends GetView {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          // Implementar la descarga del PDF
+                        onPressed: () async {
+                          _downloadAndOpenFile(pdfPath);
                         },
                         icon: const Icon(FontAwesomeIcons.download),
                         label: const Text('Descargar'),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyPdfViewer extends StatelessWidget {
-  const MyPdfViewer({super.key});
+  const MyPdfViewer({super.key, required String pdfPath});
 
   @override
   Widget build(BuildContext context) {
