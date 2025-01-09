@@ -15,6 +15,7 @@ class ChatMessage {
   final Map<String, dynamic>? citaDetails;
   final Map<String, dynamic>? confirmationDetails;
   final List<String> recommendationOptions;
+  final List<Map<String, dynamic>>? medicamentos; // Nueva propiedad para la lista de medicamentos
 
 
   ChatMessage({
@@ -29,6 +30,7 @@ class ChatMessage {
     this.citaDetails,
     this.confirmationDetails,
     this.recommendationOptions = const [],
+    this.medicamentos = const [],
   });
 }
 
@@ -71,6 +73,7 @@ class ChatController extends GetxController {
             confirmationDetails: parsedMessage['confirmation_details'],
             recommendationOptions:
             parsedMessage['recommendation_options']?.cast<String>() ?? [],
+            medicamentos: parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ?? [], 
           );
           messages.add(chatMessage);
         } catch (e) {

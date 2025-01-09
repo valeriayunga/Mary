@@ -5,8 +5,8 @@ import '../controllers/chat_controller.dart';
 import '../widgets/appointment_details_card.dart';
 import '../widgets/chat_input.dart';
 import '../widgets/chat_message_widget.dart';
+import '../widgets/medication_card.dart';
 import '../widgets/options_list.dart';
-
 
 class ChatView extends GetView<ChatController> {
   ChatView({super.key});
@@ -28,44 +28,41 @@ class ChatView extends GetView<ChatController> {
           fontWeight: FontWeight.w500,
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Obx(
-                            () => ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: controller.messages.length,
-                          itemBuilder: (context, index) {
-                            final message = controller.messages[index];
-                            if (message.citaDetails != null &&
-                                message.confirmationDetails != null) {
-                              return Column(
-                                  children: [
-                                    ChatMessageWidget(message: message),
-                                    AppointmentDetailsCard(citaDetails: message.citaDetails!, confirmationDetails: message.confirmationDetails!),
-                                  ]
-                              );
-                            }
-                            return ChatMessageWidget(message: message);
-
-
-                          },
-                        ),
-                      ),
-                    ),
-                    Obx(() => OptionsList(options: controller.getLastMessageOptions())),
-
-                  ],
-                )
+      body: SafeArea(
+        child: Column(
+          children: [
+            Flexible(
+              child: Obx(
+                    () => ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = controller.messages[index];
+                    if (message.citaDetails != null &&
+                        message.confirmationDetails != null) {
+                      return Column(
+                          children: [
+                            ChatMessageWidget(message: message),
+                            AppointmentDetailsCard(citaDetails: message.citaDetails!, confirmationDetails: message.confirmationDetails!),
+                          ]
+                      );
+                    }
+                    if(message.medicamentos != null && message.medicamentos!.isNotEmpty){
+                      return Column(children: [
+                        ChatMessageWidget(message: message),
+                        MedicationCard(medicamentos: message.medicamentos!)
+                      ],
+                      );
+                    }
+                    return ChatMessageWidget(message: message);
+                  },
+                ),
+              ),
             ),
-          ),
-
-          ChatInput(),
-        ],
+            Obx(() => OptionsList(options: controller.getLastMessageOptions())),
+            ChatInput(),
+          ],
+        ),
       ),
     );
   }
