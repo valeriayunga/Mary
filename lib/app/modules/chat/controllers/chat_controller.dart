@@ -15,8 +15,8 @@ class ChatMessage {
   final Map<String, dynamic>? citaDetails;
   final Map<String, dynamic>? confirmationDetails;
   final List<String> recommendationOptions;
-  final List<Map<String, dynamic>>? medicamentos; // Nueva propiedad para la lista de medicamentos
-
+  final List<Map<String, dynamic>>?
+      medicamentos; // Nueva propiedad para la lista de medicamentos
 
   ChatMessage({
     required this.text,
@@ -37,7 +37,8 @@ class ChatMessage {
 class ChatController extends GetxController {
   final messages = <ChatMessage>[].obs;
   final isLoading = false.obs;
-  final channel = WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8000/ws/chat'));
+  final channel =
+      WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8000/ws/chat'));
   final isListening = false.obs;
   final showOptions = true.obs; // Nueva propiedad para la visibilidad
 
@@ -45,7 +46,7 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     channel.stream.listen(
-          (message) {
+      (message) {
         try {
           final parsedMessage = json.decode(message);
           isLoading.value = false;
@@ -53,27 +54,35 @@ class ChatController extends GetxController {
           if (parsedMessage['medical_options'] != null &&
               parsedMessage['medical_options'].isNotEmpty &&
               parsedMessage['medical_options'][0].containsKey('first_name')) {
-            doctorsList = List<Map<String, dynamic>>.from(parsedMessage['medical_options']);
+            doctorsList = List<Map<String, dynamic>>.from(
+                parsedMessage['medical_options']);
           }
-
 
           final chatMessage = ChatMessage(
             text: parsedMessage['message'],
             isUser: false,
             timestamp: DateTime.now(),
-            options: parsedMessage['options']?.cast<Map<String, dynamic>>() ?? [],
+            options:
+                parsedMessage['options']?.cast<Map<String, dynamic>>() ?? [],
             medicalOptions: !doctorsList.isNotEmpty
-                ? (parsedMessage['medical_options']?.cast<Map<String, dynamic>>() ?? [])
+                ? (parsedMessage['medical_options']
+                        ?.cast<Map<String, dynamic>>() ??
+                    [])
                 : [],
-            specialtyOptions: parsedMessage['specialty_options']?.cast<Map<String, dynamic>>() ?? [],
+            specialtyOptions: parsedMessage['specialty_options']
+                    ?.cast<Map<String, dynamic>>() ??
+                [],
             doctorOptions: doctorsList,
-            historialOptions:
-            parsedMessage['historial_options']?.cast<Map<String, dynamic>>() ?? [],
+            historialOptions: parsedMessage['historial_options']
+                    ?.cast<Map<String, dynamic>>() ??
+                [],
             citaDetails: parsedMessage['cita_details'],
             confirmationDetails: parsedMessage['confirmation_details'],
             recommendationOptions:
-            parsedMessage['recommendation_options']?.cast<String>() ?? [],
-            medicamentos: parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ?? [], 
+                parsedMessage['recommendation_options']?.cast<String>() ?? [],
+            medicamentos:
+                parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ??
+                    [],
           );
           messages.add(chatMessage);
         } catch (e) {
@@ -118,6 +127,7 @@ class ChatController extends GetxController {
       sendMessage(text);
     }
   }
+
   List<Map<String, dynamic>>? getLastMessageOptions() {
     if (messages.isEmpty) return null;
     final lastMessage = messages.last;
@@ -143,6 +153,7 @@ class ChatController extends GetxController {
     }
     return null;
   }
+
   void toggleOptionsVisibility() {
     showOptions.value = !showOptions.value;
   }

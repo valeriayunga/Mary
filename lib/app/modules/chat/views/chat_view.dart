@@ -33,25 +33,27 @@ class ChatView extends GetView<ChatController> {
           children: [
             Flexible(
               child: Obx(
-                    () => ListView.builder(
+                () => ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: controller.messages.length,
                   itemBuilder: (context, index) {
                     final message = controller.messages[index];
                     if (message.citaDetails != null &&
                         message.confirmationDetails != null) {
-                      return Column(
-                          children: [
-                            ChatMessageWidget(message: message),
-                            AppointmentDetailsCard(citaDetails: message.citaDetails!, confirmationDetails: message.confirmationDetails!),
-                          ]
-                      );
-                    }
-                    if(message.medicamentos != null && message.medicamentos!.isNotEmpty){
                       return Column(children: [
                         ChatMessageWidget(message: message),
-                        MedicationCard(medicamentos: message.medicamentos!)
-                      ],
+                        AppointmentDetailsCard(
+                            citaDetails: message.citaDetails!,
+                            confirmationDetails: message.confirmationDetails!),
+                      ]);
+                    }
+                    if (message.medicamentos != null &&
+                        message.medicamentos!.isNotEmpty) {
+                      return Column(
+                        children: [
+                          ChatMessageWidget(message: message),
+                          MedicationCard(medicamentos: message.medicamentos!)
+                        ],
                       );
                     }
                     return ChatMessageWidget(message: message);

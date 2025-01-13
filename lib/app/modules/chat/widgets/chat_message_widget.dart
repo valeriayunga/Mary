@@ -10,30 +10,31 @@ class ChatMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment:
-      message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         if (!message.isUser) _buildAssistantHeader(message),
-          Align(
-          alignment: message.isUser ? Alignment.topRight : Alignment.topLeft,
-          child:  ConstrainedBox(
-          constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-          color: message.isUser ? Colors.blue : Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            message.text,
-            style: TextStyle(
-              color: message.isUser ? Colors.white : Colors.black87,
-            ),
-          ),
-        ),
-          ))],
+        Align(
+            alignment: message.isUser ? Alignment.topRight : Alignment.topLeft,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: message.isUser ? Colors.blue : Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  message.text,
+                  style: TextStyle(
+                    color: message.isUser ? Colors.white : Colors.black87,
+                  ),
+                ),
+              ),
+            ))
+      ],
     );
   }
 

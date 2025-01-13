@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mary/app/widgets/consejos_view.dart';
 import '../controllers/home_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mary/app/routes/app_pages.dart';
-import 'package:mary/app/widgets/citas.dart';
+import 'package:mary/app/widgets/AppointmentsView.dart';
 import 'package:mary/app/widgets/laboratorios.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -418,6 +419,12 @@ class HomeView extends GetView<HomeController> {
             title: 'Estilo de Vida Saludable',
             description: 'Dieta equilibrada y actividad física regular.',
             color: Colors.green,
+            onTap: () {
+              final category = {'id': 1, 'name': 'Estilo de Vida Saludable'};
+              Get.to(() => ConsejosView(
+                  categoriaId: category['id'] as int,
+                  categoriaName: category['name'] as String));
+            },
           ),
           const SizedBox(height: 12),
           _buildTipCard(
@@ -425,6 +432,12 @@ class HomeView extends GetView<HomeController> {
             title: 'Monitoreo de Azúcar',
             description: 'Revisa tus niveles de azúcar en sangre regularmente.',
             color: Colors.red,
+            onTap: () {
+              final category = {'id': 2, 'name': 'Monitoreo de Salud'};
+              Get.to(() => ConsejosView(
+                  categoriaId: category['id'] as int,
+                  categoriaName: category['name'] as String));
+            },
           ),
           const SizedBox(height: 12),
           _buildTipCard(
@@ -432,6 +445,15 @@ class HomeView extends GetView<HomeController> {
             title: 'Administración de Medicamentos',
             description: 'Toma tus medicamentos según las indicaciones.',
             color: Colors.blue,
+            onTap: () {
+              final category = {
+                'id': 3,
+                'name': 'Administracion de Medicamentos'
+              };
+              Get.to(() => ConsejosView(
+                  categoriaId: category['id'] as int,
+                  categoriaName: category['name'] as String));
+            },
           ),
         ],
       ],
@@ -443,54 +465,58 @@ class HomeView extends GetView<HomeController> {
     required String title,
     required String description,
     required Color color,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
             ),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

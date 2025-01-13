@@ -4,8 +4,10 @@ class AppointmentDetailsCard extends StatelessWidget {
   final Map<String, dynamic> citaDetails;
   final Map<String, dynamic> confirmationDetails;
 
-
-  AppointmentDetailsCard({super.key, required this.citaDetails, required this.confirmationDetails});
+  const AppointmentDetailsCard(
+      {super.key,
+      required this.citaDetails,
+      required this.confirmationDetails});
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +40,23 @@ class AppointmentDetailsCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildDetailRow(Icons.person, 'Doctor:', citaDetails['doctor']),
-            _buildDetailRow(Icons.medical_services, 'Especialidad:', citaDetails['specialty']),
-            _buildDetailRow(Icons.local_hospital, 'Centro:', citaDetails['center']),
-            _buildDetailRow(Icons.calendar_today, 'Fecha:', citaDetails['date']),
+            _buildDetailRow(Icons.medical_services, 'Especialidad:',
+                citaDetails['specialty']),
+            _buildDetailRow(
+                Icons.local_hospital, 'Centro:', citaDetails['center']),
+            _buildDetailRow(
+                Icons.calendar_today, 'Fecha:', citaDetails['date']),
             _buildDetailRow(Icons.schedule, 'Hora:', citaDetails['time']),
             const SizedBox(height: 10),
-            if (confirmationDetails != null && confirmationDetails['link_url'] != null)
-              _buildCalendarLink(confirmationDetails,context),
+            if (confirmationDetails != null &&
+                confirmationDetails['link_url'] != null)
+              _buildCalendarLink(confirmationDetails, context),
           ],
         ),
       ),
     );
   }
+
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -83,12 +90,14 @@ class AppointmentDetailsCard extends StatelessWidget {
       ),
     );
   }
-  Widget _buildCalendarLink(Map<String, dynamic> confirmationDetails,BuildContext context) {
+
+  Widget _buildCalendarLink(
+      Map<String, dynamic> confirmationDetails, BuildContext context) {
     return GestureDetector(
         onTap: () {
-          _launchUrl(confirmationDetails['link_url'],context);
+          _launchUrl(confirmationDetails['link_url'], context);
         },
-        child:  Padding(
+        child: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Row(
               children: [
@@ -98,7 +107,9 @@ class AppointmentDetailsCard extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-                const SizedBox(width: 5,),
+                const SizedBox(
+                  width: 5,
+                ),
                 Text(
                   confirmationDetails['link_text'],
                   style: const TextStyle(
@@ -108,12 +119,10 @@ class AppointmentDetailsCard extends StatelessWidget {
                   ),
                 )
               ],
-            )
-        )
-
-    );
+            )));
   }
-  Future<void> _launchUrl(String url, BuildContext context) async{
+
+  Future<void> _launchUrl(String url, BuildContext context) async {
     final Uri _url = Uri.parse(url);
     // if (!await launchUrl(_url,mode: LaunchMode.externalApplication)) {
     //   ScaffoldMessenger.of(context).showSnackBar( const SnackBar(

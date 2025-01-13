@@ -25,11 +25,13 @@ class _ChatInputState extends State<ChatInput> {
     _animationTimer?.cancel();
     super.dispose();
   }
+
   void _handleSubmitted(String text) {
     Get.find<ChatController>().sendMessage(text);
     _textController.clear();
     _focusNode.requestFocus();
   }
+
   void _startListening() async {
     final controller = Get.find<ChatController>();
     if (!controller.isListening.value) {
@@ -41,7 +43,7 @@ class _ChatInputState extends State<ChatInput> {
         controller.isListening.value = true;
         _startMicAnimation();
         _tempWords =
-        ''; // Limpiar las palabras temporales al iniciar la grabación
+            ''; // Limpiar las palabras temporales al iniciar la grabación
         _speech.listen(
           onResult: (result) {
             _tempWords = result.recognizedWords;
@@ -71,13 +73,14 @@ class _ChatInputState extends State<ChatInput> {
     _micScale.value = 1.0;
     _animationTimer =
         Timer.periodic(const Duration(milliseconds: 300), (timer) {
-          if (Get.find<ChatController>().isListening.value) {
-            _micScale.value = (_micScale.value == 1.0) ? 1.2 : 1.0;
-          } else {
-            _stopMicAnimation();
-          }
-        });
+      if (Get.find<ChatController>().isListening.value) {
+        _micScale.value = (_micScale.value == 1.0) ? 1.2 : 1.0;
+      } else {
+        _stopMicAnimation();
+      }
+    });
   }
+
   void _stopMicAnimation() {
     _micScale.value = 1.0;
     _animationTimer?.cancel();
@@ -107,14 +110,14 @@ class _ChatInputState extends State<ChatInput> {
           Row(
             children: [
               Obx(() => IconButton(
-                icon: Icon(Get.find<ChatController>().isListening.value
-                    ? Icons.mic_off
-                    : Icons.mic),
-                onPressed: _startListening,
-                color: Get.find<ChatController>().isListening.value
-                    ? Colors.red
-                    : const Color(0xFFa076ec),
-              )),
+                    icon: Icon(Get.find<ChatController>().isListening.value
+                        ? Icons.mic_off
+                        : Icons.mic),
+                    onPressed: _startListening,
+                    color: Get.find<ChatController>().isListening.value
+                        ? Colors.red
+                        : const Color(0xFFa076ec),
+                  )),
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -158,6 +161,7 @@ class _ChatInputState extends State<ChatInput> {
       ),
     );
   }
+
   Widget _buildRecordingIndicator() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -165,7 +169,7 @@ class _ChatInputState extends State<ChatInput> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Obx(
-                () => AnimatedContainer(
+            () => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               transform: Matrix4.identity()..scale(_micScale.value),

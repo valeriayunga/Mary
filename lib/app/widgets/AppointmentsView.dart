@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
+import '../widgets/reprogram_appointment_dialog.dart';
 
 class AppointmentsView extends StatefulWidget {
   const AppointmentsView({Key? key}) : super(key: key);
@@ -15,7 +17,11 @@ class _AppointmentsViewState extends State<AppointmentsView> {
   List<dynamic> _upcomingAppointments = [];
   List<dynamic> _pastAppointments = [];
   bool _isLoading = true;
-  final List<String> _locations = ['Clínica San Pablo', 'Hospital Central', 'MediHelp'];
+  final List<String> _locations = [
+    'Clínica San Pablo',
+    'Hospital Central',
+    'MediHelp'
+  ];
 
   @override
   void initState() {
@@ -28,7 +34,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       _isLoading = true;
     });
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/citas/dia/'));
+      final response =
+          await http.get(Uri.parse('http://10.0.2.2:8000/api/citas/dia/'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -44,23 +51,21 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       print("Error de conexión: $e");
       Get.snackbar("Error", "Error de conexión con el servidor",
           backgroundColor: Colors.red[300], colorText: Colors.white);
-
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
   }
+
   void _processAppointments(List<dynamic> appointments) {
     DateTime now = DateTime.now();
     _upcomingAppointments = [];
     _pastAppointments = [];
 
-
     for (var appointment in appointments) {
       DateTime appointmentDate = DateTime.parse(appointment['date']);
       // Usamos DateTime.parse para convertir la fecha y hora en objetos DateTime
-
 
       if (appointmentDate.isAfter(now.subtract(const Duration(days: 1)))) {
         _upcomingAppointments.add(appointment);
@@ -70,8 +75,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     }
     setState(() {}); // Actualizar la UI después de separar citas
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +99,16 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildUpcomingAppointments(),
-            const SizedBox(height: 32),
-            _buildPastAppointments(),
-          ],
-        ),
-      ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildUpcomingAppointments(),
+                  const SizedBox(height: 32),
+                  _buildPastAppointments(),
+                ],
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: const Color(0xFFa076ec),
@@ -114,7 +117,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       ),
     );
   }
-
 
   Widget _buildUpcomingAppointments() {
     return Column(
@@ -128,29 +130,35 @@ class _AppointmentsViewState extends State<AppointmentsView> {
         const SizedBox(height: 16),
         if (_upcomingAppointments.isEmpty)
           const Padding(
-            padding: EdgeInsets.only(top:20),
-            child: Center(child: Text('No hay citas próximas.' ,style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            padding: EdgeInsets.only(top: 20),
+            child: Center(
+                child: Text(
+              'No hay citas próximas.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
             )),
           )
         else
           ..._upcomingAppointments.map((appointment) => Column(
-            children:[
-              _buildAppointmentCard(
-                doctorName: '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
-                specialty: appointment['doctor']['specialty'],
-                date: appointment['date'],
-                time: appointment['time'],
-                location: _locations[appointment['id']%_locations.length],
-                status: appointment['status'],
-                statusColor: appointment['status'] == 'PENDING' ? Colors.orange : Colors.green,
-              ),
-              const SizedBox(height: 12),
-            ],
-          )
-          ),
+                children: [
+                  _buildAppointmentCard(
+                    appointmentId: appointment['id'],
+                    doctorName:
+                        '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
+                    specialty: appointment['doctor']['specialty'],
+                    date: appointment['date'],
+                    time: appointment['time'],
+                    location: _locations[appointment['id'] % _locations.length],
+                    status: appointment['status'],
+                    statusColor: appointment['status'] == 'PENDING'
+                        ? Colors.orange
+                        : Colors.green,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              )),
       ],
     );
   }
@@ -167,35 +175,36 @@ class _AppointmentsViewState extends State<AppointmentsView> {
         const SizedBox(height: 16),
         if (_pastAppointments.isEmpty)
           const Padding(
-            padding: EdgeInsets.only(top:20),
-            child: Center(child:  Text('No hay citas en el historial.', style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey
-            ),),
+            padding: EdgeInsets.only(top: 20),
+            child: Center(
+              child: Text(
+                'No hay citas en el historial.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
             ),
           )
         else
-          ..._pastAppointments.map((appointment) =>Column(
-              children:[
+          ..._pastAppointments.map((appointment) => Column(children: [
                 _buildAppointmentCard(
-                  doctorName: '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
+                  appointmentId: appointment['id'],
+                  doctorName:
+                      '${appointment['doctor']['first_name']} ${appointment['doctor']['last_name']}',
                   specialty: appointment['doctor']['specialty'],
                   date: appointment['date'],
                   time: appointment['time'],
-                  location: _locations[appointment['id']%_locations.length],
+                  location: _locations[appointment['id'] % _locations.length],
                   status: appointment['status'],
                   statusColor: Colors.blue,
                   isPast: true,
                 ),
                 const SizedBox(height: 12),
-              ]
-          )),
+              ])),
       ],
     );
   }
 
-
   Widget _buildAppointmentCard({
+    required int appointmentId,
     required String doctorName,
     required String specialty,
     required String date,
@@ -205,7 +214,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     required Color statusColor,
     bool isPast = false,
   }) {
-    String formattedTime = time.substring(0,5);
+    String formattedTime = time.substring(0, 5);
     String formattedDate = date.split('-').reversed.join('-');
     return Container(
       padding: const EdgeInsets.all(20),
@@ -303,7 +312,9 @@ class _AppointmentsViewState extends State<AppointmentsView> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _showReprogramDialog(appointmentId);
+                    },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       side: const BorderSide(color: Color(0xFFa076ec)),
@@ -336,6 +347,56 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     );
   }
 
+  Future<void> _reprogramAppointment(
+      int appointmentId, DateTime date, TimeOfDay time) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    final formattedTime = time.format(context);
+    try {
+      final response = await http.put(
+          Uri.parse('http://10.0.2.2:8000/api/citas/$appointmentId'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'date': formattedDate,
+            'time': formattedTime,
+          }));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _showSnackBar('Cita reprogramada correctamente', Colors.green);
+        print(data);
+      } else {
+        print("error al reprogramar la cita: ${response.statusCode}");
+        _showSnackBar("Error al reprogramar la cita", Colors.red.shade300);
+      }
+    } catch (e) {
+      print("Error al conectar con el servidor: $e");
+      _showSnackBar("Error al conectar con el servidor", Colors.red.shade300);
+    }
+  }
+
+  void _showSnackBar(String message, Color color) {
+    Get.snackbar(
+      "Mensaje",
+      message,
+      backgroundColor: color,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _showReprogramDialog(int appointmentId) {
+    showDialog(
+      context: context,
+      builder: (context) => ReprogramAppointmentDialog(
+        appointmentId: appointmentId,
+        onReprogram: (date, time) {
+          _reprogramAppointment(appointmentId, date, time);
+        },
+      ),
+    );
+  }
+
   Widget _buildInfoItem({
     required IconData icon,
     required String text,
@@ -358,7 +419,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       ],
     );
   }
-
 
   Widget _buildSectionHeader({
     required IconData icon,
