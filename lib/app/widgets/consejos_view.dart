@@ -36,7 +36,8 @@ class ConsejosViewState extends State<ConsejosView> {
       final response =
           await http.get(Uri.parse('http://10.0.2.2:8000/consejos/consejos/'));
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
+        final data = json.decode(stringResponse);
         _processConsejos(data);
       } else {
         Get.snackbar("Error", "No se pudieron cargar los consejos",

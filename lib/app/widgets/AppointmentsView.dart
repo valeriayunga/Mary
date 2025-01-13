@@ -7,7 +7,7 @@ import 'dart:convert';
 import '../widgets/reprogram_appointment_dialog.dart';
 
 class AppointmentsView extends StatefulWidget {
-  const AppointmentsView({Key? key}) : super(key: key);
+  const AppointmentsView({super.key});
 
   @override
   _AppointmentsViewState createState() => _AppointmentsViewState();
@@ -38,7 +38,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
           await http.get(Uri.parse('http://10.0.2.2:8000/api/citas/dia/'));
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
+        final data = json.decode(stringResponse);
         _processAppointments(data['appoiments']);
       } else {
         // Manejar el error de la API
