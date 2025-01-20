@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MedicationCard extends StatelessWidget {
   final List<Map<String, dynamic>> medicamentos;
 
-  MedicationCard({super.key, required this.medicamentos});
+  const MedicationCard({super.key, required this.medicamentos});
 
   @override
   Widget build(BuildContext context) {

@@ -35,7 +35,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     });
     try {
       final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/api/citas/dia/'));
+          await http.get(Uri.parse('http://192.168.1.13:8000/api/citas/dia/'));
 
       if (response.statusCode == 200) {
         final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
@@ -337,7 +337,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Ver Detalles'),
+                    child: const Text('Como llegar'),
                   ),
                 ),
               ],
@@ -351,10 +351,12 @@ class _AppointmentsViewState extends State<AppointmentsView> {
   Future<void> _reprogramAppointment(
       int appointmentId, DateTime date, TimeOfDay time) async {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    final formattedTime = time.format(context);
+    final formattedTime =
+        DateFormat('HH:mm').format(DateTime(0, 0, 0, time.hour, time.minute));
+
     try {
       final response = await http.put(
-          Uri.parse('http://10.0.2.2:8000/api/citas/$appointmentId'),
+          Uri.parse('http://192.168.1.13:8000/api/citas/$appointmentId'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },

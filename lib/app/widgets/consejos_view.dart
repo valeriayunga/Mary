@@ -11,8 +11,7 @@ class ConsejosView extends StatefulWidget {
   final String categoriaName;
 
   const ConsejosView(
-      {Key? key, required this.categoriaId, required this.categoriaName})
-      : super(key: key);
+      {super.key, required this.categoriaId, required this.categoriaName});
 
   @override
   ConsejosViewState createState() => ConsejosViewState();
@@ -33,8 +32,8 @@ class ConsejosViewState extends State<ConsejosView> {
       _isLoading = true;
     });
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/consejos/consejos/'));
+      final response = await http
+          .get(Uri.parse('http://192.168.1.13:8000/consejos/consejos/'));
       if (response.statusCode == 200) {
         final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
         final data = json.decode(stringResponse);

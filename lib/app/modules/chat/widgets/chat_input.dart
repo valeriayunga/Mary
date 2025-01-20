@@ -1,11 +1,18 @@
+// En `chat_input.dart`
+import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'dart:async';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatInput extends StatefulWidget {
+  const ChatInput({super.key});
+
   @override
   _ChatInputState createState() => _ChatInputState();
 }
@@ -14,6 +21,7 @@ class _ChatInputState extends State<ChatInput> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final stt.SpeechToText _speech = stt.SpeechToText();
+  final ImagePicker _picker = ImagePicker();
 
   // Variables para la animación del micrófono
   final RxDouble _micScale = 1.0.obs;
@@ -86,6 +94,41 @@ class _ChatInputState extends State<ChatInput> {
     _animationTimer?.cancel();
   }
 
+  Future<Map<String, dynamic>?> _uploadImage(File image) async {
+    final url = Uri.parse('http://192.168.1.13:8000/img');
+    final request = http.MultipartRequest('POST', url);
+    request.files.add(await http.MultipartFile.fromPath('image', image.path,
+        contentType: MediaType(
+            'image', image.path.split('.').last) // Obtener el tipo de la imagen
+        ));
+    try {
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonResponse = json.decode(responseData);
+        print("Respuesta de la subida: $jsonResponse");
+        return jsonResponse;
+      } else {
+        print('Error al subir la imagen: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error al subir la imagen: $e');
+      return null;
+    }
+  }
+
+  Future<void> _sendImageDataToBackend(
+      String imageUrl, String contentType) async {
+    final message = json.encode({
+      'type': 'image',
+      'image_url': imageUrl,
+      'content_type': contentType,
+    });
+    print('Mensaje de imagen: $message');
+    Get.find<ChatController>().sendMessage(message);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -142,6 +185,25 @@ class _ChatInputState extends State<ChatInput> {
                     keyboardType: TextInputType.multiline,
                   ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.image),
+                onPressed: () async {
+                  final XFile? image = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (image != null) {
+                    final response = await _uploadImage(File(image.path));
+                    print('Respuesta de la subida: $response');
+                    if (response != null) {
+                      await _sendImageDataToBackend(
+                          response['image_url'],
+                          MediaType('image', image.path.split('.').last)
+                              .toString());
+                    }
+                  }
+                },
+                color: const Color(0xFFa076ec),
               ),
               const SizedBox(width: 8),
               Container(

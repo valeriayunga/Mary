@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
 
 class LabResultsView extends StatefulWidget {
-  const LabResultsView({Key? key}) : super(key: key);
+  const LabResultsView({super.key});
 
   @override
   _LabResultsViewState createState() => _LabResultsViewState();
@@ -17,7 +17,11 @@ class LabResultsView extends StatefulWidget {
 class _LabResultsViewState extends State<LabResultsView> {
   List<dynamic> _labResults = [];
   bool _isLoading = true;
-  final List<String> _laboratories = ['Laboratorio Central', 'Clínica San Pablo', 'MediHelp Lab'];
+  final List<String> _laboratories = [
+    'Laboratorio Central',
+    'Clínica San Pablo',
+    'MediHelp Lab'
+  ];
   final Dio _dio = Dio();
 
   @override
@@ -32,7 +36,8 @@ class _LabResultsViewState extends State<LabResultsView> {
     });
     try {
       // Usar la dirección IP local del emulador Android para acceder al backend en el host.
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/lab/get/tests'));
+      final response =
+          await http.get(Uri.parse('http://192.168.1.13:8000/lab/get/tests'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -43,8 +48,10 @@ class _LabResultsViewState extends State<LabResultsView> {
         }
       } else {
         // Manejar el error de la API
-        print("Error al obtener resultados de laboratorio: ${response.statusCode}");
-        Get.snackbar("Error", "No se pudieron cargar los resultados de laboratorio",
+        print(
+            "Error al obtener resultados de laboratorio: ${response.statusCode}");
+        Get.snackbar(
+            "Error", "No se pudieron cargar los resultados de laboratorio",
             backgroundColor: Colors.red[300], colorText: Colors.white);
       }
     } catch (e) {
@@ -66,7 +73,7 @@ class _LabResultsViewState extends State<LabResultsView> {
     }
     try {
       final response = await _dio.get(
-          'http://10.0.2.2:8000/lab/files/$fileUrl',
+          'http://192.168.1.13:8000/lab/files/$fileUrl',
           options: Options(responseType: ResponseType.bytes));
 
       if (response.statusCode == 200 && response.data != null) {
@@ -76,16 +83,20 @@ class _LabResultsViewState extends State<LabResultsView> {
           bytes.toString(),
           type: 'application/pdf', // o el tipo que sea
         );
-        Get.snackbar('Apertura Exitosa', 'El archivo se abrio correctamente.',backgroundColor: Colors.green[300], colorText: Colors.white );
+        Get.snackbar('Apertura Exitosa', 'El archivo se abrio correctamente.',
+            backgroundColor: Colors.green[300], colorText: Colors.white);
       } else {
-        Get.snackbar("Error", "Error al descargar el archivo",backgroundColor: Colors.red[300], colorText: Colors.white);
+        Get.snackbar("Error", "Error al descargar el archivo",
+            backgroundColor: Colors.red[300], colorText: Colors.white);
       }
     } on DioException catch (e) {
       print("Error de descarga: $e");
-      Get.snackbar("Error", "Error al descargar el archivo",backgroundColor: Colors.red[300], colorText: Colors.white);
-    }catch(e){
+      Get.snackbar("Error", "Error al descargar el archivo",
+          backgroundColor: Colors.red[300], colorText: Colors.white);
+    } catch (e) {
       print("Error desconocido: $e");
-      Get.snackbar("Error", "Error desconocido",backgroundColor: Colors.red[300], colorText: Colors.white);
+      Get.snackbar("Error", "Error desconocido",
+          backgroundColor: Colors.red[300], colorText: Colors.white);
     }
   }
 
@@ -112,30 +123,30 @@ class _LabResultsViewState extends State<LabResultsView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader(
-              icon: FontAwesomeIcons.flask,
-              title: 'Exámenes de Laboratorio',
-              color: const Color(0xFFa076ec),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionHeader(
+                    icon: FontAwesomeIcons.flask,
+                    title: 'Exámenes de Laboratorio',
+                    color: const Color(0xFFa076ec),
+                  ),
+                  const SizedBox(height: 16),
+                  if (_labResults.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Center(
+                          child: Text(
+                        'No hay resultados de laboratorio.',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      )),
+                    )
+                  else
+                    _buildLabResultsList(),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            if (_labResults.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Center(
-                    child: Text(
-                      'No hay resultados de laboratorio.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    )),
-              )
-            else
-              _buildLabResultsList(),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Aquí puedes implementar la navegación al chat de preguntas
@@ -150,18 +161,22 @@ class _LabResultsViewState extends State<LabResultsView> {
 
   Widget _buildLabResultsList() {
     return Column(
-      children: _labResults.map((result) => Column(
-        children: [
-          _buildLabResultCard(
-            title: result['test_type'],
-            date: result['date'],
-            laboratory: _laboratories[result['id'] % _laboratories.length],
-            pdfPath: result['file_path'],
-          ),
-          const SizedBox(height: 12),
-        ],
-      ),
-      ).toList(),
+      children: _labResults
+          .map(
+            (result) => Column(
+              children: [
+                _buildLabResultCard(
+                  title: result['test_type'],
+                  date: result['date'],
+                  laboratory:
+                      _laboratories[result['id'] % _laboratories.length],
+                  pdfPath: result['file_path'],
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          )
+          .toList(),
     );
   }
 

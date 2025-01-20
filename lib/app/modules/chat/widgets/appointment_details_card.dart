@@ -48,8 +48,7 @@ class AppointmentDetailsCard extends StatelessWidget {
                 Icons.calendar_today, 'Fecha:', citaDetails['date']),
             _buildDetailRow(Icons.schedule, 'Hora:', citaDetails['time']),
             const SizedBox(height: 10),
-            if (confirmationDetails != null &&
-                confirmationDetails['link_url'] != null)
+            if (confirmationDetails['link_url'] != null)
               _buildCalendarLink(confirmationDetails, context),
           ],
         ),
@@ -123,7 +122,7 @@ class AppointmentDetailsCard extends StatelessWidget {
   }
 
   Future<void> _launchUrl(String url, BuildContext context) async {
-    final Uri _url = Uri.parse(url);
+    final Uri url0 = Uri.parse(url);
     // if (!await launchUrl(_url,mode: LaunchMode.externalApplication)) {
     //   ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
     //     content: Text("No se pudo abrir el enlace"),

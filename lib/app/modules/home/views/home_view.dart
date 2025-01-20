@@ -110,8 +110,8 @@ class HomeView extends GetView<HomeController> {
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       'Bienvenida, Mary',
                       style: TextStyle(
                         fontSize: 24,
@@ -119,8 +119,8 @@ class HomeView extends GetView<HomeController> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       'Tu asistente de salud inteligente',
                       style: TextStyle(
                         fontSize: 16,

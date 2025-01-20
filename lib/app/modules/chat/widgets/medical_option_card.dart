@@ -32,7 +32,7 @@ class MedicalOptionCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(children: [
-              Icon(
+              const Icon(
                 Icons.local_hospital_rounded,
                 color: Colors.blue,
                 size: 18,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -5,7 +7,8 @@ import '../controllers/chat_controller.dart';
 
 class ChatMessageWidget extends StatelessWidget {
   final ChatMessage message;
-  ChatMessageWidget({super.key, required this.message});
+  const ChatMessageWidget({super.key, required this.message});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,26 +17,32 @@ class ChatMessageWidget extends StatelessWidget {
       children: [
         if (!message.isUser) _buildAssistantHeader(message),
         Align(
-            alignment: message.isUser ? Alignment.topRight : Alignment.topLeft,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
+          alignment: message.isUser ? Alignment.topRight : Alignment.topLeft,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: message.isUser ? Colors.blue : Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: message.isUser ? Colors.blue : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  message.text,
-                  style: TextStyle(
-                    color: message.isUser ? Colors.white : Colors.black87,
-                  ),
-                ),
-              ),
-            ))
+              child: message.text.startsWith('data:image/')
+                  ? Image.memory(
+                      base64Decode(message.text.split(',')[1]),
+                      fit: BoxFit.cover,
+                    )
+                  : Text(
+                      message.text,
+                      style: TextStyle(
+                        color: message.isUser ? Colors.white : Colors.black87,
+                      ),
+                    ),
+            ),
+          ),
+        ),
       ],
     );
   }

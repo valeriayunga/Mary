@@ -20,8 +20,7 @@ class _DoctorCardState extends State<DoctorCard> {
         showTitleActions: true,
         minTime: DateTime.now(),
         maxTime: DateTime(2101), onChanged: (date) {
-      print('change $date in time zone ' +
-          date.timeZoneOffset.inHours.toString());
+      print('change $date in time zone ${date.timeZoneOffset.inHours}');
     }, onConfirm: (date) {
       Get.find<ChatController>().sendDateTime(date);
     }, locale: LocaleType.es);

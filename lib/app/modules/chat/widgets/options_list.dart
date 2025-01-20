@@ -4,7 +4,6 @@ import 'package:mary/app/modules/chat/controllers/chat_controller.dart';
 import 'package:mary/app/modules/chat/widgets/option_doctor_card.dart';
 import 'package:mary/app/modules/chat/widgets/specialist_card.dart';
 import 'medical_option_card.dart';
-import 'option_button.dart';
 import 'options_container.dart';
 import 'option_card.dart';
 

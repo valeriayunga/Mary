@@ -38,7 +38,7 @@ class ChatController extends GetxController {
   final messages = <ChatMessage>[].obs;
   final isLoading = false.obs;
   final channel =
-      WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:8000/ws/chat'));
+      WebSocketChannel.connect(Uri.parse('ws://192.168.1.13:8000/ws/chat'));
   final isListening = false.obs;
   final showOptions = true.obs; // Nueva propiedad para la visibilidad
 
@@ -49,42 +49,53 @@ class ChatController extends GetxController {
       (message) {
         try {
           final parsedMessage = json.decode(message);
-          isLoading.value = false;
-          List<Map<String, dynamic>> doctorsList = [];
-          if (parsedMessage['medical_options'] != null &&
-              parsedMessage['medical_options'].isNotEmpty &&
-              parsedMessage['medical_options'][0].containsKey('first_name')) {
-            doctorsList = List<Map<String, dynamic>>.from(
-                parsedMessage['medical_options']);
-          }
+          if (parsedMessage['type'] == 'image') {
+            // Procesar la imagen recibida del servidor
+            final imageResponse = parsedMessage['message'];
+            messages.add(ChatMessage(
+              text: imageResponse, // Mensaje de respuesta del servidor
+              isUser: false,
+              timestamp: DateTime.now(),
+            ));
+          } else {
+            // Procesar mensajes de texto normales
+            List<Map<String, dynamic>> doctorsList = [];
+            if (parsedMessage['medical_options'] != null &&
+                parsedMessage['medical_options'].isNotEmpty &&
+                parsedMessage['medical_options'][0].containsKey('first_name')) {
+              doctorsList = List<Map<String, dynamic>>.from(
+                  parsedMessage['medical_options']);
+            }
 
-          final chatMessage = ChatMessage(
-            text: parsedMessage['message'],
-            isUser: false,
-            timestamp: DateTime.now(),
-            options:
-                parsedMessage['options']?.cast<Map<String, dynamic>>() ?? [],
-            medicalOptions: !doctorsList.isNotEmpty
-                ? (parsedMessage['medical_options']
-                        ?.cast<Map<String, dynamic>>() ??
-                    [])
-                : [],
-            specialtyOptions: parsedMessage['specialty_options']
-                    ?.cast<Map<String, dynamic>>() ??
-                [],
-            doctorOptions: doctorsList,
-            historialOptions: parsedMessage['historial_options']
-                    ?.cast<Map<String, dynamic>>() ??
-                [],
-            citaDetails: parsedMessage['cita_details'],
-            confirmationDetails: parsedMessage['confirmation_details'],
-            recommendationOptions:
-                parsedMessage['recommendation_options']?.cast<String>() ?? [],
-            medicamentos:
-                parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ??
-                    [],
-          );
-          messages.add(chatMessage);
+            final chatMessage = ChatMessage(
+              text: parsedMessage['message'],
+              isUser: false,
+              timestamp: DateTime.now(),
+              options:
+                  parsedMessage['options']?.cast<Map<String, dynamic>>() ?? [],
+              medicalOptions: !doctorsList.isNotEmpty
+                  ? (parsedMessage['medical_options']
+                          ?.cast<Map<String, dynamic>>() ??
+                      [])
+                  : [],
+              specialtyOptions: parsedMessage['specialty_options']
+                      ?.cast<Map<String, dynamic>>() ??
+                  [],
+              doctorOptions: doctorsList,
+              historialOptions: parsedMessage['historial_options']
+                      ?.cast<Map<String, dynamic>>() ??
+                  [],
+              citaDetails: parsedMessage['cita_details'],
+              confirmationDetails: parsedMessage['confirmation_details'],
+              recommendationOptions:
+                  parsedMessage['recommendation_options']?.cast<String>() ?? [],
+              medicamentos:
+                  parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ??
+                      [],
+            );
+            messages.add(chatMessage);
+          }
+          isLoading.value = false;
         } catch (e) {
           print("Error al parsear mensaje: $e");
           isLoading.value = false;
@@ -101,14 +112,20 @@ class ChatController extends GetxController {
     );
   }
 
+  void sendImage(String message) {
+    isLoading.value = true;
+    channel.sink.add(message);
+  }
+
   void sendMessage(String text) {
+    final message = json.encode({'text': text});
     messages.add(ChatMessage(
       text: text,
       isUser: true,
       timestamp: DateTime.now(),
     ));
     isLoading.value = true;
-    channel.sink.add(text);
+    channel.sink.add(message);
   }
 
   void sendDateTime(DateTime dateTime) {
