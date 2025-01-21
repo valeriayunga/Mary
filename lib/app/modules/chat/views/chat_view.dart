@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mary/app/modules/chat/widgets/loading_indicator.dart';
-
 import '../controllers/chat_controller.dart';
 import '../widgets/appointment_details_card.dart';
 import '../widgets/chat_input.dart';
 import '../widgets/chat_message_widget.dart';
-import '../widgets/medication_card.dart';
+import '../widgets/medication_list_card.dart';
+import '../widgets/medical_recipe_card.dart';
 import '../widgets/options_list.dart';
 
 class ChatView extends GetView<ChatController> {
@@ -41,27 +41,41 @@ class ChatView extends GetView<ChatController> {
                       itemCount: controller.messages.length,
                       itemBuilder: (context, index) {
                         final message = controller.messages[index];
+                        List<Widget> messageWidgets = [
+                          ChatMessageWidget(message: message)
+                        ];
+
+                        // 1. Detalles de la cita
                         if (message.citaDetails != null &&
                             message.confirmationDetails != null) {
-                          return Column(children: [
-                            ChatMessageWidget(message: message),
+                          messageWidgets.add(
                             AppointmentDetailsCard(
-                                citaDetails: message.citaDetails!,
-                                confirmationDetails:
-                                    message.confirmationDetails!),
-                          ]);
-                        }
-                        if (message.medicamentos != null &&
-                            message.medicamentos!.isNotEmpty) {
-                          return Column(
-                            children: [
-                              ChatMessageWidget(message: message),
-                              MedicationCard(
-                                  medicamentos: message.medicamentos!)
-                            ],
+                              citaDetails: message.citaDetails!,
+                              confirmationDetails: message.confirmationDetails!,
+                            ),
                           );
                         }
-                        return ChatMessageWidget(message: message);
+
+                        // 2. Receta médica (medical_recipes)
+                        if (message.medicalRecipes != null) {
+                          messageWidgets.add(
+                            MedicalRecipeCard(
+                              medicalRecipe: message.medicalRecipes!,
+                            ),
+                          );
+                        }
+
+                        // 3. Medicamentos (prescription_medications)
+                        if (message.prescriptionMedications != null &&
+                            message.prescriptionMedications!.isNotEmpty) {
+                          messageWidgets.add(
+                            MedicationListCard(
+                              medications: message.prescriptionMedications!,
+                            ),
+                          );
+                        }
+
+                        return Column(children: messageWidgets);
                       },
                     ),
                     if (controller.isLoading.value)

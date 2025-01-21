@@ -15,8 +15,9 @@ class ChatMessage {
   final Map<String, dynamic>? citaDetails;
   final Map<String, dynamic>? confirmationDetails;
   final List<String> recommendationOptions;
-  final List<Map<String, dynamic>>?
-      medicamentos; // Nueva propiedad para la lista de medicamentos
+  final List<Map<String, dynamic>>? medicamentos;
+  final Map<String, dynamic>? medicalRecipes;
+  final List<Map<String, dynamic>>? prescriptionMedications;
 
   ChatMessage({
     required this.text,
@@ -31,6 +32,8 @@ class ChatMessage {
     this.confirmationDetails,
     this.recommendationOptions = const [],
     this.medicamentos = const [],
+    this.medicalRecipes,
+    this.prescriptionMedications = const [],
   });
 }
 
@@ -40,25 +43,24 @@ class ChatController extends GetxController {
   final channel =
       WebSocketChannel.connect(Uri.parse('ws://192.168.1.13:8000/ws/chat'));
   final isListening = false.obs;
-  final showOptions = true.obs; // Nueva propiedad para la visibilidad
+  final showOptions = true.obs;
 
   @override
   void onInit() {
     super.onInit();
     channel.stream.listen(
       (message) {
+        print("Mensaje del websocket: $message");
         try {
           final parsedMessage = json.decode(message);
           if (parsedMessage['type'] == 'image') {
-            // Procesar la imagen recibida del servidor
             final imageResponse = parsedMessage['message'];
             messages.add(ChatMessage(
-              text: imageResponse, // Mensaje de respuesta del servidor
+              text: imageResponse,
               isUser: false,
               timestamp: DateTime.now(),
             ));
           } else {
-            // Procesar mensajes de texto normales
             List<Map<String, dynamic>> doctorsList = [];
             if (parsedMessage['medical_options'] != null &&
                 parsedMessage['medical_options'].isNotEmpty &&
@@ -89,10 +91,26 @@ class ChatController extends GetxController {
               confirmationDetails: parsedMessage['confirmation_details'],
               recommendationOptions:
                   parsedMessage['recommendation_options']?.cast<String>() ?? [],
-              medicamentos:
-                  parsedMessage['medicamentos']?.cast<Map<String, dynamic>>() ??
-                      [],
+              prescriptionMedications:
+                  parsedMessage.containsKey('prescription_medications') &&
+                          parsedMessage['prescription_medications'] != null
+                      ? parsedMessage['prescription_medications']
+                          ?.cast<Map<String, dynamic>>()
+                      : [],
+              medicalRecipes:
+                  parsedMessage['medical_recipes'] is Map<String, dynamic>
+                      ? parsedMessage['medical_recipes']
+                      : null,
             );
+
+            // Depuración: Verifica los medicamentos recibidos
+            print("=== Mensaje parseado ===");
+            print("Texto: ${chatMessage.text}");
+            print("MedicalRecipes: ${chatMessage.medicalRecipes}");
+            print(
+                "PrescriptionMedications: ${chatMessage.prescriptionMedications}");
+            print("=========================");
+
             messages.add(chatMessage);
           }
           isLoading.value = false;
