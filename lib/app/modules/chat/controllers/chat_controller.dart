@@ -41,7 +41,7 @@ class ChatController extends GetxController {
   final messages = <ChatMessage>[].obs;
   final isLoading = false.obs;
   final channel =
-      WebSocketChannel.connect(Uri.parse('ws://192.168.1.13:8000/ws/chat'));
+      WebSocketChannel.connect(Uri.parse('ws://172.17.180.111:8000/ws/chat'));
   final isListening = false.obs;
   final showOptions = true.obs;
 

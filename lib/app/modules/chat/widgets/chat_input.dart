@@ -95,7 +95,7 @@ class _ChatInputState extends State<ChatInput> {
   }
 
   Future<Map<String, dynamic>?> _uploadImage(File image) async {
-    final url = Uri.parse('http://192.168.1.13:8000/img');
+    final url = Uri.parse('http://172.17.180.111:8000/img');
     final request = http.MultipartRequest('POST', url);
     request.files.add(await http.MultipartFile.fromPath('image', image.path,
         contentType: MediaType(

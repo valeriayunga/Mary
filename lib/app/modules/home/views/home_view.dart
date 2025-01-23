@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mary/app/routes/app_pages.dart';
 import 'package:mary/app/widgets/AppointmentsView.dart';
 import 'package:mary/app/widgets/laboratorios.dart';
+import 'package:mary/app/widgets/medicamentos_view.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -348,11 +349,13 @@ class HomeView extends GetView<HomeController> {
               ),
               const SizedBox(height: 20),
               _buildMedicalInfoItem(
-                icon: FontAwesomeIcons.pills,
-                title: 'Medicamentos',
-                info: 'Metformina, Enalapril',
-                color: Colors.blue,
-              ),
+                  icon: FontAwesomeIcons.pills,
+                  title: 'Medicamentos',
+                  info: 'Metformina, Enalapril',
+                  color: Colors.blue,
+                  onTap: () {
+                    Get.to(() => const MedicamentosView());
+                  }),
             ],
           ),
         ),
@@ -365,41 +368,45 @@ class HomeView extends GetView<HomeController> {
     required String title,
     required String info,
     required Color color,
+    VoidCallback? onTap,
   }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color),
           ),
-          child: Icon(icon, color: color),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                info,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
+                const SizedBox(height: 4),
+                Text(
+                  info,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

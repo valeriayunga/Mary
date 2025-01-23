@@ -37,7 +37,7 @@ class _LabResultsViewState extends State<LabResultsView> {
     try {
       // Usar la dirección IP local del emulador Android para acceder al backend en el host.
       final response =
-          await http.get(Uri.parse('http://192.168.1.13:8000/lab/get/tests'));
+          await http.get(Uri.parse('http://172.17.180.111:8000/lab/get/tests'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -73,7 +73,7 @@ class _LabResultsViewState extends State<LabResultsView> {
     }
     try {
       final response = await _dio.get(
-          'http://192.168.1.13:8000/lab/files/$fileUrl',
+          'http://172.17.180.111:8000/lab/files/$fileUrl',
           options: Options(responseType: ResponseType.bytes));
 
       if (response.statusCode == 200 && response.data != null) {

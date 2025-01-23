@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mary/app/modules/chat/widgets/loading_indicator.dart';
+import 'package:mary/app/modules/chat/widgets/medication_card.dart';
 import '../controllers/chat_controller.dart';
 import '../widgets/appointment_details_card.dart';
 import '../widgets/chat_input.dart';
@@ -20,7 +21,7 @@ class ChatView extends GetView<ChatController> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        title: const Text('Laboratorios'),
+        title: const Text('Mary tu asistente Medico'),
         backgroundColor: Colors.white,
         elevation: 1,
         titleTextStyle: const TextStyle(
@@ -74,7 +75,12 @@ class ChatView extends GetView<ChatController> {
                             ),
                           );
                         }
-
+                        if (message.medicamentos != null &&
+                            message.medicamentos!.isNotEmpty) {
+                          messageWidgets.add(
+                            MedicationCard(medicamentos: message.medicamentos!),
+                          );
+                        }
                         return Column(children: messageWidgets);
                       },
                     ),

@@ -26,24 +26,79 @@ class MedicationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Medicamentos Obtenidos',
+            const Text(
+              'Medicamentos Recetados',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: medicamentos.length,
-              separatorBuilder: (context, index) => const Divider(height: 10),
-              itemBuilder: (context, index) {
-                final medicamento = medicamentos[index];
-                return _buildMedicationRow(medicamento);
-              },
+            ...medicamentos.map((med) => _buildMedicationItem(med)).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMedicationItem(Map<String, dynamic> medicamento) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12),
+      color: Colors.grey[50],
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Nombre y marca
+            Row(
+              children: [
+                Icon(Icons.medication, color: Colors.blue[700], size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        medicamento['name'],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (medicamento['brand_name'] != null &&
+                          medicamento['brand_name'].isNotEmpty)
+                        Text(
+                          medicamento['brand_name'],
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Detalles
+            _buildDetailRow(
+              Icons.medical_information,
+              'Dosis:',
+              medicamento['dosage'],
+            ),
+            _buildDetailRow(
+              Icons.schedule,
+              'Frecuencia:',
+              medicamento['frequency'],
+            ),
+            _buildDetailRow(
+              Icons.calendar_today,
+              'Duración:',
+              medicamento['duration'],
             ),
           ],
         ),
@@ -51,42 +106,29 @@ class MedicationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMedicationRow(Map<String, dynamic> medicamento) {
+  Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(
-            Icons.medication,
-            color: Colors.blue.withOpacity(0.8),
-            size: 18,
-          ),
+          Icon(icon, color: Colors.blue[700], size: 18),
           const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 4),
           Expanded(
             child: Text(
-              medicamento['nombre'],
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontSize: 14,
+              value,
+              style: const TextStyle(
+                color: Colors.black87,
               ),
             ),
           ),
-          if (medicamento['dosis'].isNotEmpty)
-            Text(
-              'Dosis: ${medicamento['dosis']}',
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontSize: 14,
-              ),
-            ),
-          if (medicamento['frecuencia'].isNotEmpty)
-            Text(
-              'Frecuencia: ${medicamento['frecuencia']}',
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontSize: 14,
-              ),
-            ),
         ],
       ),
     );
