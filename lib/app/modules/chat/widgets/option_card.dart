@@ -7,7 +7,11 @@ class OptionCard extends StatelessWidget {
   final String text;
   final IconData icon;
 
-  const OptionCard({super.key, required this.text, required this.icon});
+  const OptionCard({
+    super.key,
+    required this.text,
+    required this.icon,
+  });
   @override
   Widget build(BuildContext context) {
     return Container(

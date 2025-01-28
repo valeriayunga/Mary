@@ -35,7 +35,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     });
     try {
       final response = await http
-          .get(Uri.parse('http://172.17.180.111:8000/api/citas/dia/'));
+          .get(Uri.parse('http://192.168.1.13:8000/api/citas/dia/'));
 
       if (response.statusCode == 200) {
         final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
@@ -356,7 +356,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
     try {
       final response = await http.put(
-          Uri.parse('http://172.17.180.111:8000/api/citas/$appointmentId'),
+          Uri.parse('http://192.168.1.13:8000/api/citas/$appointmentId'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },

@@ -41,7 +41,7 @@ class _MedicamentosViewState extends State<MedicamentosView> {
     });
     try {
       final response = await http.get(Uri.parse(
-          'http://172.17.180.111:8000/prescriptions/get/prescriptions'));
+          'http://192.168.1.13:8000/prescriptions/get/prescriptions'));
       if (response.statusCode == 200) {
         final stringResponse = const Utf8Decoder().convert(response.bodyBytes);
         final data = json.decode(stringResponse);

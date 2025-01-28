@@ -16,73 +16,95 @@ class ChatView extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text('Mary tu asistente Medico'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      backgroundColor: Colors.grey[50],
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
           children: [
+            _buildWelcomeCard(),
             Flexible(
               child: Obx(
                 () => Stack(
                   children: [
-                    ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: controller.messages.length,
-                      itemBuilder: (context, index) {
-                        final message = controller.messages[index];
-                        List<Widget> messageWidgets = [
-                          ChatMessageWidget(message: message)
-                        ];
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                        itemCount: controller.messages.length,
+                        itemBuilder: (context, index) {
+                          final message = controller.messages[index];
+                          List<Widget> messageWidgets = [
+                            ChatMessageWidget(message: message)
+                          ];
 
-                        // 1. Detalles de la cita
-                        if (message.citaDetails != null &&
-                            message.confirmationDetails != null) {
-                          messageWidgets.add(
-                            AppointmentDetailsCard(
-                              citaDetails: message.citaDetails!,
-                              confirmationDetails: message.confirmationDetails!,
-                            ),
-                          );
-                        }
+                          if (message.citaDetails != null &&
+                              message.confirmationDetails != null) {
+                            messageWidgets.add(
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: AppointmentDetailsCard(
+                                  citaDetails: message.citaDetails!,
+                                  confirmationDetails:
+                                      message.confirmationDetails!,
+                                ),
+                              ),
+                            );
+                          }
 
-                        // 2. Receta médica (medical_recipes)
-                        if (message.medicalRecipes != null) {
-                          messageWidgets.add(
-                            MedicalRecipeCard(
-                              medicalRecipe: message.medicalRecipes!,
-                            ),
-                          );
-                        }
+                          if (message.medicalRecipes != null) {
+                            messageWidgets.add(
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: MedicalRecipeCard(
+                                  medicalRecipe: message.medicalRecipes!,
+                                ),
+                              ),
+                            );
+                          }
 
-                        // 3. Medicamentos (prescription_medications)
-                        if (message.prescriptionMedications != null &&
-                            message.prescriptionMedications!.isNotEmpty) {
-                          messageWidgets.add(
-                            MedicationListCard(
-                              medications: message.prescriptionMedications!,
-                            ),
+                          if (message.prescriptionMedications != null &&
+                              message.prescriptionMedications!.isNotEmpty) {
+                            messageWidgets.add(
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: MedicationListCard(
+                                  medications: message.prescriptionMedications!,
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (message.medicamentos != null &&
+                              message.medicamentos!.isNotEmpty) {
+                            messageWidgets.add(
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: MedicationCard(
+                                  medicamentos: message.medicamentos!,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: Column(children: messageWidgets),
                           );
-                        }
-                        if (message.medicamentos != null &&
-                            message.medicamentos!.isNotEmpty) {
-                          messageWidgets.add(
-                            MedicationCard(medicamentos: message.medicamentos!),
-                          );
-                        }
-                        return Column(children: messageWidgets);
-                      },
+                        },
+                      ),
                     ),
                     if (controller.isLoading.value)
                       const Positioned(
@@ -95,8 +117,99 @@ class ChatView extends GetView<ChatController> {
                 ),
               ),
             ),
-            Obx(() => OptionsList(options: controller.getLastMessageOptions())),
-            const ChatInput(),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Obx(() =>
+                      OptionsList(options: controller.getLastMessageOptions())),
+                  const ChatInput(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: const Color(0xFFa076ec),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Get.back(),
+      ),
+      title: const Row(
+        children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: Colors.white24,
+            child: Icon(
+              Icons.health_and_safety,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          SizedBox(width: 12),
+          Text(
+            'Mary tu asistente Médico',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomeCard() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      decoration: const BoxDecoration(
+        color: Color(0xFFa076ec),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Row(
+          children: [
+            Icon(
+              Icons.tips_and_updates,
+              color: Colors.white,
+              size: 24,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'La mejor medicina es un sonrias',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ],
         ),
       ),

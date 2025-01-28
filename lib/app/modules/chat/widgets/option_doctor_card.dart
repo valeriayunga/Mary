@@ -5,7 +5,10 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 class DoctorCard extends StatefulWidget {
   final Map<String, dynamic> doctor;
-  const DoctorCard({super.key, required this.doctor});
+  const DoctorCard({
+    super.key,
+    required this.doctor,
+  });
 
   @override
   _DoctorCardState createState() => _DoctorCardState();

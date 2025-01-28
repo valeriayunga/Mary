@@ -5,7 +5,10 @@ import 'package:mary/app/modules/chat/controllers/chat_controller.dart';
 class MedicalOptionCard extends StatelessWidget {
   final Map<String, dynamic> medicalOption;
 
-  const MedicalOptionCard({super.key, required this.medicalOption});
+  const MedicalOptionCard({
+    super.key,
+    required this.medicalOption,
+  });
 
   @override
   Widget build(BuildContext context) {
